@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequency Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #dcdcdc;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            width: 85%;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            color: #111;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 24px;
+            background: #646464;
+            border-radius: 4px;
+            outline: none;
+            accent-color: #ffffff;
+        }
+        .button-group {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+        button {
+            flex: 1;
+            padding: 24px;
+            font-size: 1.5rem;
+            background-color: #c8c8c8;
+            border: 2px solid #000;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:active {
+            background-color: #a0a0a0;
+            transform: translateY(2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="freqText">Frequency: 2149 Hz</h1>
+        
+        <!-- Frequency Slider -->
+        <input type="range" id="freqSlider" min="20" max="20000" value="2149" step="1">
+        
+        <!-- -5 Hz and +5 Hz Buttons -->
+        <div class="button-group">
+            <button id="minusBtn">-5 Hz</button>
+            <button id="plusBtn">+5 Hz</button>
+        </div>
+    </div>
+
+    <script>
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let currentFreq = 2149;
+
+        const freqText = document.getElementById('freqText');
+        const freqSlider = document.getElementById('freqSlider');
+        const minusBtn = document.getElementById('minusBtn');
+        const plusBtn = document.getElementById('plusBtn');
+
+        // Initialize Web Audio API (Browsers require user interaction first)
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(currentFreq, audioCtx.currentTime);
+                
+                // Set comfortable volume level
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+            }
+        }
+
+        function updateFrequency(newFreq) {
+            currentFreq = Math.max(20, Math.min(20000, newFreq));
+            freqSlider.value = currentFreq;
+            freqText.innerText = `Frequency: ${Math.round(currentFreq)} Hz`;
+
+            if (oscillator && audioCtx) {
+                // Smoothly slide to the new frequency instantly without clicking
+                oscillator.frequency.setTargetAtTime(currentFreq, audioCtx.currentTime, 0.02);
+            }
+        }
+
+        // Event Listeners for UI interaction
+        freqSlider.addEventListener('input', (e) => {
+            initAudio();
+            updateFrequency(parseFloat(e.target.value));
+        });
+
+        minusBtn.addEventListener('click', () => {
+            initAudio();
+            updateFrequency(currentFreq - 5);
+        });
+
+        plusBtn.addEventListener('click', () => {
+            initAudio();
+            updateFrequency(currentFreq + 5);
+        });
+
+        // Safe starter trigger for mobile/desktop browsers
+        window.addEventListener('click', () => {
+            initAudio();
+        }, { once: true });
+    </script>
+</body>
+</html>
