@@ -1,1 +1,1 @@
-ok SO PLEASE DO NOT CHANGE OR COMMIT CODE IF DONE IT WILL MAYBE BREAK YOUR DEVICE AND USE THIS ONLY FOR EDUCATIONAL purpose do not attempt to use file outside of safe os
+ok SO PLEASE DO NOT CHANGE OR COMMIT CODE IF DONE IT WILL MAYBE BREAK YOUR DEVICE AND USE THIS ONLY FOR EDUCATIONAL purpose do not attempt to use file outside of safe os put this inside an code studio or use special software requires adult supervision.
